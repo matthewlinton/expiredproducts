@@ -1,0 +1,79 @@
+// BEGIN Expired Products 1.3c
+# PHP Calendar (version 2.3), written by Keith Devens
+# http://keithdevens.com/software/php_calendar
+#  see example at http://keithdevens.com/weblog
+# License: http://keithdevens.com/software/license
+# Modified by Matthew Linton to work with osCommerce
+
+function tep_draw_calendar($date_stamp, $events = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
+        $year = date('Y', $date_stamp);
+        $month = date('m', $date_stamp);
+        $first_of_month = gmmktime(0,0,0,$month,1,$year);
+        #remember that mktime will automatically correct if invalid dates are entered
+        # for instance, mktime(0,0,0,12,32,1997) will be the date for Jan 1, 1998
+        # this provides a built in "rounding" feature to generate_calendar()
+
+        $day_names = array(); #generate all the day names according to the current locale
+        for($n=0,$t=(3+$first_day)*86400; $n<7; $n++,$t+=86400) #January 4, 1970 was a Sunday
+                $day_names[$n] = ucfirst(gmstrftime('%A',$t)); #%A means full textual day name
+
+        list($month, $year, $month_name, $weekday) = explode(',',gmstrftime('%m,%Y,%B,%w',$first_of_month));
+        $weekday = ($weekday + 7 - $first_day) % 7; #adjust for $first_day
+        $title   = htmlentities(ucfirst($month_name)).'&nbsp;'.$year;  #note that some locales don't capitalize month and day names
+
+        #Begin calendar. Uses a real <caption>. See http://diveintomark.org/archives/2002/07/03
+        @list($p, $pl) = each($pn); @list($n, $nl) = each($pn); #previous and next links, if applicable
+        if($p) $p = '<span class="calendar-prev">'.($pl ? '<a href="'.htmlspecialchars($pl).'">'.$p.'</a>' : $p).'</span>&nbsp;';
+        if($n) $n = '&nbsp;<span class="calendar-next">'.($nl ? '<a href="'.htmlspecialchars($nl).'">'.$n.'</a>' : $n).'</span>';
+        $calendar = '<table class="calendar">'."\n" .
+        '<caption class="calendar-month">'.$p.($month_href ? '<a href="'.htmlspecialchars($month_href).'">'.$title.'</a>' : $title).$n."</caption>\n<tr>\n";
+
+        if($day_name_length){ #if the day names should be shown ($day_name_length > 0)
+                #if day_name_length is >3, the full name of the day will be printed
+                foreach($day_names as $d)
+                        $calendar .= '<th class="calendar" abbr="'.htmlentities($d).'">'.htmlentities($day_name_length < 4 ? substr($d,0,$day_name_length) : $d).'</th>' . "\n";
+                $calendar .= "</tr>\n<tr>\n";
+        }
+
+	if($weekday > 0) $calendar .= '<td class="calendar-empty" colspan="'.$weekday.'">&nbsp;</td>' . "\n"; #initial 'empty' days
+
+        for($day=1,$events_in_month=gmdate('t',$first_of_month); $day<=$events_in_month; $day++,$weekday++){
+                if($weekday == 7){
+                        $weekday   = 0; #start a new week
+                        $calendar .= "</tr>\n<tr>\n";
+                }
+                if(isset($events[$day]) and is_array($events[$day])){
+                        $calendar .= '<td class="';
+                        if ($year == date('Y') && $month == date('m') && $day == date('j')) {
+                                $calendar .= 'calendar-eventToday';
+                        }
+                        else if ($year < date('Y') || $month < date('m') || $day < date('j')) {
+                                $calendar .= 'calendar-expired';
+                        }
+                        else {
+                                $calendar .= 'calendar-event';
+                        }
+
+                        $calendar .= '">' .
+                        ($year == date('Y') && $month == date('m') && $day == date('j') ? '<font class="calendar-today">'.$day.'</font>'  : $day) .
+                                                '<br>';
+
+                        foreach($events[$day] as $event) {
+                                @list($link, $content, $description) = $event;
+                                if(is_null($content))  $content = $day;
+                                $calendar .= ($link ? '<a class="calendar-info" href="'.htmlspecialchars($link).'">'.
+                                        $content.
+                                        ($description ? '<span>'.$description.'</span>' : '' ).'</a><br>' : $content);
+                        }
+                        $calendar .= '</td>'."\n";
+                } else {
+                        $calendar .= '<td class="calendar">' .
+                        ($year == date('Y') && $month == date('m') && $day == date('j') ? '<font class="calendar-today">'.
+                        $day.'</font>'  : $day ).'</td>'."\n";
+                }
+        }
+        if($weekday != 7) $calendar .= '<td colspan="'.(7-$weekday).'">&nbsp;</td>' . "\n"; #remaining "empty" days
+
+        return $calendar."</tr>\n</table>\n";
+}
+// END Expired Products 1.3c

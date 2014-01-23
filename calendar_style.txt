@@ -1,0 +1,89 @@
+/* BEGIN Expired Products 1.3c */
+
+.calendar-print {
+	background: #fff;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	font-weight: bold;
+}
+
+TABLE.calendar {
+	background: #ddf;
+	width: 100%;
+       	font-size: 12px;
+}
+
+CAPTION.calendar-month {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+A.calendar-info {
+	position:relative;
+        text-decoration: none;
+        z-index:24;
+}
+
+A.calendar-info:hover {
+        z-index:25;
+        background-color:#ff0
+}
+
+A.calendar-info span {
+        display: none
+}
+
+A.calendar-info:hover span {
+        display: block;
+        position: absolute;
+        top: 2em;
+        left: 2em;
+        width: 15em;
+        border: 1px solid #000;
+        background: #ddf;
+        color: #000;
+        text-align: justify;
+        padding: 2px;
+}
+	
+TH.calendar {
+	background: #800;
+	color: #fff;
+	font-weight: bold;
+	align: center;
+	padding: 4px;
+}
+
+TD.calendar {
+	background: #fff;
+	padding: 5px;
+	vertical-align: top;
+}
+
+TD.calendar-empty {
+}
+
+FONT.calendar-today {
+	color: #f33;
+	font-weight: bold;
+}
+
+TD.calendar-event {
+	background: #dfd;
+	padding: 5px;
+	vertical-align: top;
+}
+
+TD.calendar-eventToday {
+        background: #aaf;
+        padding: 5px;
+        vertical-align: top;
+}
+
+TD.calendar-expired {
+	background: #fdd;
+	padding: 5px;
+	vertical-align: top;
+}
+/* END Expired Products 1.3c */

@@ -1,0 +1,86 @@
+--- PHP_Calendar_2.3_Keith_Devens.txt	2009-09-23 15:38:36.000000000 -0400
++++ ../calendar_code.txt	2009-10-08 15:58:00.000000000 -0400
+@@ -1,9 +1,13 @@
++// BEGIN Expired Products 1.3c
+ # PHP Calendar (version 2.3), written by Keith Devens
+ # http://keithdevens.com/software/php_calendar
+ #  see example at http://keithdevens.com/weblog
+ # License: http://keithdevens.com/software/license
++# Modified by Matthew Linton to work with osCommerce
+ 
+-function generate_calendar($year, $month, $days = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
++function tep_draw_calendar($date_stamp, $events = array(), $day_name_length = 3, $month_href = NULL, $first_day = 0, $pn = array()){
++        $year = date('Y', $date_stamp);
++        $month = date('m', $date_stamp);
+ 	$first_of_month = gmmktime(0,0,0,$month,1,$year);
+ 	#remember that mktime will automatically correct if invalid dates are entered
+ 	# for instance, mktime(0,0,0,12,32,1997) will be the date for Jan 1, 1998
+@@ -21,31 +25,55 @@
+ 	@list($p, $pl) = each($pn); @list($n, $nl) = each($pn); #previous and next links, if applicable
+ 	if($p) $p = '<span class="calendar-prev">'.($pl ? '<a href="'.htmlspecialchars($pl).'">'.$p.'</a>' : $p).'</span>&nbsp;';
+ 	if($n) $n = '&nbsp;<span class="calendar-next">'.($nl ? '<a href="'.htmlspecialchars($nl).'">'.$n.'</a>' : $n).'</span>';
+-	$calendar = '<table class="calendar">'."\n".
+-		'<caption class="calendar-month">'.$p.($month_href ? '<a href="'.htmlspecialchars($month_href).'">'.$title.'</a>' : $title).$n."</caption>\n<tr>";
++        $calendar = '<table class="calendar">'."\n" .
++        '<caption class="calendar-month">'.$p.($month_href ? '<a href="'.htmlspecialchars($month_href).'">'.$title.'</a>' : $title).$n."</caption>\n<tr>\n";
+ 
+ 	if($day_name_length){ #if the day names should be shown ($day_name_length > 0)
+ 		#if day_name_length is >3, the full name of the day will be printed
+ 		foreach($day_names as $d)
+-			$calendar .= '<th abbr="'.htmlentities($d).'">'.htmlentities($day_name_length < 4 ? substr($d,0,$day_name_length) : $d).'</th>';
+-		$calendar .= "</tr>\n<tr>";
++                        $calendar .= '<th class="calendar" abbr="'.htmlentities($d).'">'.htmlentities($day_name_length < 4 ? substr($d,0,$day_name_length) : $d).'</th>' . "\n";
++                $calendar .= "</tr>\n<tr>\n";
+ 	}
+ 
+-	if($weekday > 0) $calendar .= '<td colspan="'.$weekday.'">&nbsp;</td>'; #initial 'empty' days
+-	for($day=1,$days_in_month=gmdate('t',$first_of_month); $day<=$days_in_month; $day++,$weekday++){
++	if($weekday > 0) $calendar .= '<td class="calendar-empty" colspan="'.$weekday.'">&nbsp;</td>' . "\n"; #initial 'empty' days
++
++        for($day=1,$events_in_month=gmdate('t',$first_of_month); $day<=$events_in_month; $day++,$weekday++){
+ 		if($weekday == 7){
+ 			$weekday   = 0; #start a new week
+-			$calendar .= "</tr>\n<tr>";
++                        $calendar .= "</tr>\n<tr>\n";
++                }
++                if(isset($events[$day]) and is_array($events[$day])){
++                        $calendar .= '<td class="';
++                        if ($year == date('Y') && $month == date('m') && $day == date('j')) {
++                                $calendar .= 'calendar-eventToday';
++                        }
++                        else if ($year < date('Y') || $month < date('m') || $day < date('j')) {
++                                $calendar .= 'calendar-expired';
++                        }
++                        else {
++                                $calendar .= 'calendar-event';
+ 		}
+-		if(isset($days[$day]) and is_array($days[$day])){
+-			@list($link, $classes, $content) = $days[$day];
++
++                        $calendar .= '">' .
++                        ($year == date('Y') && $month == date('m') && $day == date('j') ? '<font class="calendar-today">'.$day.'</font>'  : $day) .
++                                                '<br>';
++
++                        foreach($events[$day] as $event) {
++                                @list($link, $content, $description) = $event;
+ 			if(is_null($content))  $content  = $day;
+-			$calendar .= '<td'.($classes ? ' class="'.htmlspecialchars($classes).'">' : '>').
+-				($link ? '<a href="'.htmlspecialchars($link).'">'.$content.'</a>' : $content).'</td>';
++                                $calendar .= ($link ? '<a class="calendar-info" href="'.htmlspecialchars($link).'">'.
++                                        $content.
++                                        ($description ? '<span>'.$description.'</span>' : '' ).'</a><br>' : $content);
++                        }
++                        $calendar .= '</td>'."\n";
++                } else {
++                        $calendar .= '<td class="calendar">' .
++                        ($year == date('Y') && $month == date('m') && $day == date('j') ? '<font class="calendar-today">'.
++                        $day.'</font>'  : $day ).'</td>'."\n";
+ 		}
+-		else $calendar .= "<td>$day</td>";
+ 	}
+-	if($weekday != 7) $calendar .= '<td colspan="'.(7-$weekday).'">&nbsp;</td>'; #remaining "empty" days
++        if($weekday != 7) $calendar .= '<td colspan="'.(7-$weekday).'">&nbsp;</td>' . "\n"; #remaining "empty" days
+ 
+ 	return $calendar."</tr>\n</table>\n";
+ }
++// END Expired Products 1.3c

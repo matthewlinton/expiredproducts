@@ -1,0 +1,10 @@
+--- myTruncate_Chirp_Internet.txt	2009-09-24 13:13:37.000000000 -0400
++++ ../truncate_code.txt	2009-09-24 16:09:08.000000000 -0400
+@@ -1,6 +1,6 @@
+ // Original PHP code by Chirp Internet: www.chirp.com.au
+ // Please acknowledge use of this code by including this header.
+-function myTruncate($string, $limit, $break=" ", $pad="...") {
++function tep_truncate_string($string, $limit, $break=" ", $pad="...") {
+         // return with no change if string is shorter than $limit
+         if(strlen($string) <= $limit) return $string;
+ 
