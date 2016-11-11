@@ -2,6 +2,8 @@
 
 Expired Products for OS Commerce: This was created for a 2010 version and may no longer work.
 
+This project has moved to : https://bitbucket.org/matthewlinton/osc_expiredproducts/
+
 ## About
 
 Expired Products adds the ability to flag products with an expiration flag and date. This is very useful when selling things like tickets to events.
